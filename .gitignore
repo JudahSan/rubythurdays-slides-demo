@@ -1,0 +1,28 @@
+# DragonRuby runtime output
+logs/
+tmp/
+exceptions/
+.dragonruby/
+
+# Build output from dragonruby-publish / dragonruby-bind
+builds/
+
+# Game save data (your high score file)
+high-score.txt
+
+# Secrets and publishing credentials
+metadata/itch_*
+*.pem
+*.key
+.env
+
+# OS junk
+.DS_Store
+Thumbs.db
+*~
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

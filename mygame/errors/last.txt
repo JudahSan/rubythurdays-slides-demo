@@ -1,0 +1,20 @@
+* EXCEPTION:
+* ERROR: :wrap method missing on ~Hash~.
+
+#+begin_src ~Hash#inspect~
+{:icons=>["1f409", "1f3ae", "1f1f0-1f1ea"]}
+#+end_src ~Hash#inspect~
+
+
+
+The method named
+  :wrap
+with args
+  [70]
+doesn't exist on [Hash, #<Class:#<Hash:0x3ee40e0>>, Enumerable].
+
+(suggestions above)
+** Backtrace:
+*** app/main.rb:617:in slides_tick
+*** app/main.rb:616:in slides_tick
+*** app/main.rb:638:in tick
