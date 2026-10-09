@@ -90,8 +90,8 @@ Accessed via `args.inputs.mouse.buttons.(left/middle/right/x1/x2)`.
 | `held` | Truthy if held |
 | `held_at` | `tick_count` of hold start |
 | `global_held_at` | `global_tick_count` of hold start |
-| `buffered_click` | `true` if exclusively a click (not held) |
-| `buffered_held` | `true` if exclusively held (not a click) |
+| `buffered_click` | `MousePoint[:x, :y, :created_at, :global_created_at]` if exclusively a click (not held) |
+| `buffered_held` | `MousePoint[:x, :y, :created_at, :global_created_at]` if exclusively held (not a click) |
 
 ### Controller
 
@@ -556,11 +556,11 @@ Example:
 ```ruby
 def tick args
   if args.inputs.mouse.buttons.left.buffered_click
-    DR.notify "buffered_click occurred #{args.inputs.mouse.buttons.left.id}"
+    DR.notify "buffered_click occurred #{args.inputs.mouse.buttons.left.buffered_click}"
   end
   
   if args.inputs.mouse.buttons.left.buffered_held
-    DR.notify "buffered_held occurred"
+    DR.notify "buffered_held occurred #{args.inputs.mouse.buttons.left.buffered_held}"
   end
 end
 ```
@@ -578,8 +578,8 @@ Button properties:
 - `held`: Returns a truthy value for if button was held.
 - `held_at`: Returns `Kernel.tick_count` that button was held.
 - `global_held_at`: Returns `Kernel.global_tick_count` that button was held.
-- `buffered_click`: Returns `true` if button has been exclusively determined to be a click (and won't be considered held).
-- `buffered_held`: Returns `true` if button has been exclusively determined to be held (and won't be considered clicked).
+- `buffered_click`: Returns `MousePoint[:x, :y, :created_at, :global_created_at]` if button has been exclusively determined to be a click (and won't be considered held).
+- `buffered_held`: Returns `MousePoint[:x, :y, :created_at, :global_created_at]` if button has been exclusively determined to be held (and won't be considered clicked).
 
 ## Touch
 

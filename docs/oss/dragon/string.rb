@@ -248,7 +248,7 @@ class String
     end
   end
 
-  def self.line_anchors line_count
+  def self.line_anchors_bare line_count
     line_count = line_count.to_i
     results = []
     if line_count % 2 == 0
@@ -270,6 +270,20 @@ class String
         results << 0.5 + (i + 1) * 1.0
       end
       return results
+    end
+  end
+
+  def self.line_anchors_strings strings
+    line_anchors_bare(strings.length).map_with_index do |anchor, i|
+      [anchor, strings[i]]
+    end
+  end
+
+  def self.line_anchors line_count_or_strings
+    if line_count_or_strings.is_a? Array
+      line_anchors_strings line_count_or_strings
+    else
+      line_anchors_bare line_count_or_strings
     end
   end
 

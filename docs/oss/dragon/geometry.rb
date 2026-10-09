@@ -1165,10 +1165,28 @@ S
 
         # if we don't want to wrap y, and the wrapping of x to the right
         # led to a upwards y shift, then revert the move
-        if !wrap_y && current_rect.y > original_rect.y && left_right == 1
-          current_rect = original_rect
-        elsif !wrap_y && current_rect.y < original_rect.y && left_right == -1
-          current_rect = original_rect
+        if !wrap_y
+          current_rect_resolved = if using && using.is_a?(Symbol)
+                                    current_rect.send(using)
+                                  elsif using
+                                    using.call(current_rect)
+                                  else
+                                    current_rect
+                                  end
+
+          original_rect_resolved = if using && using.is_a?(Symbol)
+                                    original_rect.send(using)
+                                  elsif using
+                                    using.call(original_rect)
+                                  else
+                                    original_rect
+                                  end
+
+          if current_rect_resolved.y > original_rect_resolved.y && left_right == 1
+            current_rect = original_rect
+          elsif current_rect_resolved.y < original_rect_resolved.y && left_right == -1
+            current_rect = original_rect
+          end
         end
 
         current_rect = rect_navigate_up_down rect: current_rect,

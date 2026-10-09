@@ -1,4 +1,4 @@
-Copyright 2024 DragonRuby LLC
+Copyright 2026 DragonRuby LLC
 
 MIT License
 

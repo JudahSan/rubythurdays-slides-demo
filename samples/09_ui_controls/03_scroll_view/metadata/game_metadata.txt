@@ -7,4 +7,3 @@ icon=metadata/icon.png
 # HD and High DPI available via the Pro License
 hd=true
 highdpi=true
-orientation=portrait

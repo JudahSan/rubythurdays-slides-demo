@@ -1,3 +1,11 @@
+* 7.23
+** [Bugfix] Game no longer displays a black screen regardless of zoom level of webpage.
+* 7.22
+** [Pro] [Android] Fixed version mismatch for libSDL.
+** [Samples] Complete overhaul of scroll view sample =samples/09_ui_controls/03_scroll_view=.
+   Sample app is now more real world (acceleration, multi input, touch enabled). More enhancements to come later.
+** [Bugfix] ~Geometry.rect_navigate~ no longer throws an exception if ~wrap_(x|y)~ is false and ~using:~ parameter is specified.
+** [Support] ~String.line_anchors~ accept either line count of array of strings and will return a tuple of [anchor, index] or [anchor, string].
 * 7.21
 ** [Pro] [iOS] [Android] Fixed bug related to orientation defaults when ~orientation~ does not match ~orientation_android~ or ~orientation_ios~.
 ** [Samples] Updated multi-platform/multi-orientation of Squares arcade app to use modern DR apis.

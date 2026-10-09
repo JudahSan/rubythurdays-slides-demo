@@ -4001,7 +4001,7 @@ GTKRuntime	./dragon/runtime.rb	/^GTKRuntime = GTK::Runtime$/;"	C	module:GTK
 GTKRuntime-constant	./dragon/doc/top-level-namespace.html	/^        <dt id="GTKRuntime-constant" class="">GTKRuntime =$/;"	I
 GTKTopLevelOutputs	./dragon/outputs.rb	/^GTKTopLevelOutputs = GTK::TopLevelOutputs$/;"	C
 GTKTopLevelOutputs-constant	./dragon/doc/top-level-namespace.html	/^        <dt id="GTKTopLevelOutputs-constant" class="">GTKTopLevelOutputs =$/;"	I
-GTK_VERSION	./dragon/runtime/version.rb	/^GTK_VERSION = "7.21"$/;"	C
+GTK_VERSION	./dragon/runtime/version.rb	/^GTK_VERSION = "7.23"$/;"	C
 GTK_VERSION-constant	./dragon/doc/top-level-namespace.html	/^        <dt id="GTK_VERSION-constant" class="">GTK_VERSION =$/;"	I
 GenericOutputsArray	./dragon/outputs.rb	/^  class GenericOutputsArray < OutputsArray$/;"	c	module:GTK
 Geometry	./dragon/geometry.rb	/^  module Geometry$/;"	m	module:GTK
@@ -10314,8 +10314,10 @@ line-instance_method	./dragon/doc/HashDeprecated.html	/^  <h3 class="signature "
 line?	./dragon/geometry.rb	/^      def line? shape$/;"	f	module:GTK.Geometry
 line?-class_method	./dragon/doc/GTK/Geometry.html	/^  <h3 class="signature " id="line?-class_method">$/;"	I
 lineHeight	./dragon/doc/js/jquery.js	/^{for(var a=0,b;(b=this[a])!=null;a++){b.nodeType===1&&f.cleanData(b.getElementsByTagName("*"));w/;"	p	property:anonymousObject5e680c2812b05.cssNumber
-line_anchors	./dragon/string.rb	/^  def self.line_anchors line_count$/;"	S	class:String
+line_anchors	./dragon/string.rb	/^  def self.line_anchors line_count_or_strings$/;"	S	class:String
 line_anchors-class_method	./dragon/doc/String.html	/^  <h3 class="signature first" id="line_anchors-class_method">$/;"	I
+line_anchors_bare	./dragon/string.rb	/^  def self.line_anchors_bare line_count$/;"	S	class:String
+line_anchors_strings	./dragon/string.rb	/^  def self.line_anchors_strings strings$/;"	S	class:String
 line_angle	./dragon/geometry.rb	/^      def line_angle line$/;"	f	module:GTK.Geometry
 line_angle-class_method	./dragon/doc/GTK/Geometry.html	/^  <h3 class="signature " id="line_angle-class_method">$/;"	I
 line_center_point	./dragon/geometry.rb	/^      def line_center_point line$/;"	f	module:GTK.Geometry

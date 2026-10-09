@@ -268,7 +268,7 @@ module GTKGTK408,9861
     def set w: nil, h: nil, background_color: nil, clear_before_render: nilset1074,28470
 GTKTopLevelOutputs = GTK::TopLevelOutputsGTKTopLevelOutputs1083,28758
 
-../../../../dragon/string.rb,1594
+../../../../dragon/string.rb,1742
 class StringString6,123
   alias_method(:__original_split__, :split) unless method_defined?(:__original_split__)__original_split__8,156
   def char_bytechar_byte10,245
@@ -298,8 +298,10 @@ class StringString6,123
   def indent count, indent_char: "  ", pad_line_with_space: falseindent226,5125
   def ljust(count, padstr = " ")ljust235,5364
   def rjust(count, padstr = " ")rjust243,5506
-  def self.line_anchors line_countline_anchors251,5648
-  def self.split(s, *args)split276,6321
+  def self.line_anchors_bare line_countline_anchors_bare251,5648
+  def self.line_anchors_strings stringsline_anchors_strings276,6326
+  def self.line_anchors line_count_or_stringsline_anchors282,6476
+  def self.split(s, *args)split290,6682
 
 ../../../../dragon/attr_line.rb,2135
 module AttrLineAttrLine6,126
@@ -586,15 +588,15 @@ module GTKGTK12,199
       def angle_cardinal_vec2 angleangle_cardinal_vec21134,33101
       def angle_cardinal_vec2_r angle_in_radiansangle_cardinal_vec2_r1149,33630
       def rect_navigate rect:, rects:, left_right: nil, up_down: nil, directional_vector: nil, wrect_navigate1153,33754
-      def rect_to_lines rectrect_to_lines1183,35151
-      def line_to_points lineline_to_points1193,35603
-      def points_to_line p1, p2points_to_line1200,35737
-      def line_midpoint lineline_midpoint1204,35829
-      def zoom_rect(rect:,zoom_rect1210,35982
-      def lerp_rect from, to, step, tolerance: 0lerp_rect1274,38263
-      def cubic_bezier_vec2 p0, p1, p2, p3, tcubic_bezier_vec21289,38861
-      def cubic_bezier_scalar v0, v1, v2, v3, tcubic_bezier_scalar1296,39060
-Geometry = GTK::GeometryGeometry1306,39336
+      def rect_to_lines rectrect_to_lines1201,35932
+      def line_to_points lineline_to_points1211,36384
+      def points_to_line p1, p2points_to_line1218,36518
+      def line_midpoint lineline_midpoint1222,36610
+      def zoom_rect(rect:,zoom_rect1228,36763
+      def lerp_rect from, to, step, tolerance: 0lerp_rect1292,39044
+      def cubic_bezier_vec2 p0, p1, p2, p3, tcubic_bezier_vec21307,39642
+      def cubic_bezier_scalar v0, v1, v2, v3, tcubic_bezier_scalar1314,39841
+Geometry = GTK::GeometryGeometry1324,40117
 
 ../../../../dragon/inputs_docs.rb,160
 module InputsDocsInputsDocs6,128
@@ -1475,7 +1477,7 @@ module GTKGTK1,0
       def take_screenshot= valuetake_screenshot=29,961
 
 ../../../../dragon/runtime/version.rb,37
-GTK_VERSION = "7.21"GTK_VERSION1,0
+GTK_VERSION = "7.23"GTK_VERSION1,0
 
 ../../../../dragon/runtime/benchmark.rb,473
 module GTKGTK6,126

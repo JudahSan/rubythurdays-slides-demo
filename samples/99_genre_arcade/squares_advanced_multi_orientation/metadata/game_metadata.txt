@@ -1,5 +1,6 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
+packageid=org.dragonruby.squarefall
 gameid=sample-app
 gametitle=Square Fall
 version=1.0

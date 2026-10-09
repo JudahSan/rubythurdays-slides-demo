@@ -1,256 +1,264 @@
-class ScrollView
-  attr_dr
+require 'app/scroll_view.rb'
 
-  attr :y_offset, :rect, :clicked_items, :target_y_offset
+module Main
+  attr :sv_left, :sv_right
 
-  def initialize row:, col:, w:, h:;
-    @items = []
-    @clicked_items = []
-    @y_offset = 0
-    @scroll_view_dy = 0
-    @rect = Layout.rect row: row,
-                        col: col,
-                        w: w,
-                        h: h,
-                        include_row_gutter: true,
-                        include_col_gutter: true
-    @primitives = []
-  end
+  def start
+    sprite_paths = [
+      "sprites/square/red.png",
+      "sprites/square/orange.png",
+      "sprites/square/yellow.png",
+      "sprites/square/green.png",
+      "sprites/square/blue.png",
+      "sprites/square/indigo.png",
+      "sprites/square/violet.png",
+      "sprites/square/white.png",
+      "sprites/square/black.png",
+      "sprites/square/gray.png",
+    ]
 
-  def add_item prefab
-    raise "prefab must be a Hash" unless prefab.is_a? Hash
-    @items << prefab
-  end
-
-  def content_height
-    lowest_item = @items.min_by { |primitive| primitive.y } || { x: 0, y: 0 }
-    h = @rect.h
-
-    if lowest_item
-      h -= lowest_item.y - Layout.gutter
+    @things_left = 51.map do |i|
+      {
+        name: "Item #{i}",
+        price: Numeric.rand(10..100),
+        path: sprite_paths.sample
+      }
     end
 
-    h
-  end
-
-  def y_offset_bottom_limit
-    -80
-  end
-
-  def y_offset_top_limit
-    content_height - @rect.h + @rect.y + 80
-  end
-
-  def tick_inputs
-    @clicked_items = []
-
-    if inputs.mouse.down
-      @last_mouse_held_y = inputs.mouse.y
-      @last_mouse_held_y_diff = 0
-    elsif inputs.mouse.held
-      @last_mouse_held_y ||= inputs.mouse.y
-      @last_mouse_held_y_diff ||= 0
-      @last_mouse_held_y_diff = inputs.mouse.y - @last_mouse_held_y
-      @last_mouse_held_y = inputs.mouse.y
+    @things_right = 51.map do |i|
+      {
+        name: "Item #{i}",
+        price: Numeric.rand(10..100),
+        path: sprite_paths.sample
+      }
     end
 
-    if inputs.mouse.down
-      @mouse_down_at = Kernel.tick_count
-      @mouse_down_y = inputs.mouse.y
-      if @scroll_view_dy.abs < 7
-        @maybe_click = true
-      else
-        @maybe_click = false
-      end
+    @sv_left = ScrollView.new(
+      row: 1,
+      col: 1,
+      w: 8,
+      h: 10
+    )
 
-      @scroll_view_dy = 0
-    elsif inputs.mouse.held
-      @target_y_offset = @y_offset + (inputs.mouse.y - @mouse_down_y) * 2
-      @mouse_down_y = inputs.mouse.y
-    elsif inputs.mouse.up
-      @target_y_offset = nil
-      @mouse_up_at = Kernel.tick_count
-      @mouse_up_y = inputs.mouse.y
+    build_sv @sv_left, @things_left
 
-      if @maybe_click && (@last_mouse_held_y_diff).abs <= 1 && (@mouse_down_at - @mouse_up_at).abs < 12
-        if inputs.mouse.y - 20 > @rect.y && inputs.mouse.y < (@rect.y + @rect.h - 20)
-          @clicked_items = offset_items.reject { |primitive| !primitive.w || !primitive.h }
-                                       .find_all { |primitive| inputs.mouse.inside_rect? primitive }
+    @sv_right = ScrollView.new(
+      row: 1,
+      col: 15,
+      w: 8,
+      h: 10
+    )
+
+    build_sv @sv_right, @things_right
+  end
+
+  def build_sv sv, things
+    scroll_y = sv.scroll_y
+    sv.clear
+    things.each do |t|
+      sv.add w: 2,
+             h: 2,
+             text: [t.name, t.price],
+             path: t.path,
+             ref: t
+    end
+    sv.scroll_y = scroll_y
+  end
+
+  def switch_input_modes!
+    @sv_left.scroll_to id: @sv_left.items.first.id
+    @sv_right.scroll_to id: @sv_right.items.first.id
+    @hovered_item_id = nil
+    @active_sv = @sv_left
+  end
+
+  def move_item item_rect
+    return if !item_rect
+    DR.notify "Item moved: #{item_rect.item.text} #{item_rect.item.scroll_view_id}"
+    if item_rect.item.scroll_view_id == @sv_left.id
+      @things_left.reject! { |t| t == item_rect.item.ref }
+      @things_right << item_rect.item.ref
+      build_sv @sv_left, @things_left
+      build_sv @sv_right, @things_right
+      item = @sv_right.items.find { |i| i.ref == item_rect.item.ref }
+      @sv_right.scroll_to id: item.id
+      @hovered_item_id = @sv_left.find_item_rect(rect: item_rect.rect)&.item&.id
+      @sv_left.scroll_to id: @hovered_item_id
+    elsif item_rect.item.scroll_view_id == @sv_right.id
+      @things_right.reject! { |t| t == item_rect.item.ref }
+      @things_left << item_rect.item.ref
+      build_sv @sv_left, @things_left
+      build_sv @sv_right, @things_right
+      item = @sv_left.items.find { |i| i.ref == item_rect.item.ref }
+      @sv_left.scroll_to id: item.id
+      @hovered_item_id = @sv_right.find_item_rect(rect: item_rect.rect)&.item&.id
+      @sv_right.scroll_to id: @hovered_item_id
+    end
+  end
+
+  def key_repeat_left_right
+    if inputs.last_active == :keyboard
+      inputs.keyboard.key_repeat.left_right
+    else
+      if inputs.controller_one.key_down.left_right != 0
+        inputs.controller_one.left_right
+      elsif (inputs.controller_one.key_held.left || inputs.controller_one.key_held.right)
+        t = inputs.controller_one.key_held.left || inputs.controller_one.key_held.right
+        if t.elapsed_time > 12 && t.elapsed_time.zmod?(2)
+          inputs.controller_one.left_right
+        else
+          0
         end
       else
-        @scroll_view_dy += @last_mouse_held_y_diff
-      end
-      @mouse_down_at = nil
-      @mouse_up_at = nil
-    end
-
-    if inputs.keyboard.key_down.page_down
-      if @scroll_view_dy >= 0
-        @scroll_view_dy += 5
-      else
-        @scroll_view_dy = @scroll_view_dy.lerp(0, 1)
-      end
-    elsif inputs.keyboard.key_down.page_up
-      if @scroll_view_dy <= 0
-        @scroll_view_dy -= 5
-      else
-        @scroll_view_dy = @scroll_view_dy.lerp(0, 1)
+        0
       end
     end
+  end
 
-    if inputs.mouse.wheel
-      if inputs.mouse.wheel.inverted
-        @scroll_view_dy -= inputs.mouse.wheel.y
+  def key_repeat_up_down
+    if inputs.last_active == :keyboard
+      inputs.keyboard.key_repeat.up_down
+    else
+      if inputs.controller_one.key_down.up_down != 0
+        inputs.controller_one.up_down
+      elsif (inputs.controller_one.key_held.up || inputs.controller_one.key_held.down)
+        t = inputs.controller_one.key_held.up || inputs.controller_one.key_held.down
+        if t.elapsed_time > 12 && t.elapsed_time.zmod?(2)
+          inputs.controller_one.up_down
+        else
+          0
+        end
       else
-        @scroll_view_dy += inputs.mouse.wheel.y
+        0
       end
     end
+  end
 
+  def calc_buy_mouse
+    if inputs.mouse.intersect_rect?(@sv_left.rect)
+      @active_sv = @sv_left
+    elsif inputs.mouse.intersect_rect?(@sv_right.rect)
+      @active_sv = @sv_right
+    end
+
+    @sv_left.tick_mouse inputs.mouse
+    @sv_right.tick_mouse inputs.mouse
+    @hovered_item_id = @sv_left.hovered_item(inputs.mouse)&.item&.id ||
+                       @sv_right.hovered_item(inputs.mouse)&.item&.id
+
+    move_item(@sv_left.clicked_item(inputs.mouse) || @sv_right.clicked_item(inputs.mouse))
+  end
+
+  def calc_buy_keyboard
+    return if @sv_left.items.length == 0 && @sv_right.items.length == 0
+
+    if @sv_left.items.length == 0 && !@hovered_item_id
+      @active_sv = @sv_right
+      @hovered_item_id = @active_sv.items_rects.first&.item&.id
+      @active_sv.scroll_to id: @hovered_item_id
+    elsif @sv_right.items.length == 0 && !@hovered_item_id
+      @active_sv = @sv_left
+      @hovered_item_id = @active_sv.items_rects.first&.item&.id
+      @active_sv.scroll_to id: @hovered_item_id
+    end
+
+    @hovered_item_id ||= @sv_left.items_rects.first&.item&.id
+    prev_id = @hovered_item_id
+    nav_rects = if key_repeat_left_right != 0
+                  @sv_left.items_rects + @sv_right.items_rects
+                else
+                  @active_sv.items_rects
+                end
+
+    hovered_rect = Geometry.rect_navigate(rect: @active_sv.find_item_rect(id: @hovered_item_id),
+                                          rects: nav_rects,
+                                          left_right: key_repeat_left_right,
+                                          up_down: key_repeat_up_down,
+                                          wrap_x: false,
+                                          wrap_y: false,
+                                          using: :rect)
+
+    @hovered_item_id = hovered_rect.item.id
+
+    if @hovered_item_id && @hovered_item_id != prev_id
+      if hovered_rect.item.scroll_view_id == @sv_left.id
+        @active_sv = @sv_left
+      elsif hovered_rect.item.scroll_view_id == @sv_right.id
+        @active_sv = @sv_right
+      end
+
+      @active_sv.scroll_to(id: @hovered_item_id)
+    end
+
+    @sv_left.tick_scroll_y
+    @sv_right.tick_scroll_y
+
+    if inputs.keyboard.key_down.enter || inputs.controller_one.key_down.s
+      move_item @active_sv.find_item_rect(id: @hovered_item_id)
+    end
   end
 
   def tick
-    if @target_y_offset
-      if @target_y_offset < y_offset_bottom_limit
-        @y_offset = @y_offset.lerp @target_y_offset, 0.05
-      elsif @target_y_offset > y_offset_top_limit
-        @y_offset = @y_offset.lerp @target_y_offset, 0.05
-      else
-        @y_offset = @y_offset.lerp @target_y_offset, 0.5
-      end
-      @target_y_offset = nil if @y_offset.round == @target_y_offset.round
-      @scroll_view_dy = 0
-    end
+    $outputs.watch "#{DR.current_framerate}"
 
-    tick_inputs
+    @active_sv ||= @sv_left
 
-    @y_offset += @scroll_view_dy
-
-    if @y_offset < 0
-      if inputs.mouse.held
-        # if @y_offset < -80
-        #   @y_offset = -80
-        # end
-      else
-        @y_offset = @y_offset.lerp(0, 0.2)
+    if inputs.last_active_at == Kernel.tick_count - 1
+      switch_input_modes!
+    else
+      if inputs.last_active == :mouse
+        calc_buy_mouse
+      elsif inputs.last_active == :keyboard || inputs.last_active == :controller
+        calc_buy_keyboard
       end
     end
 
-    if content_height <= (@rect.h - @rect.y)
-      @y_offset = 0
-      @scroll_view_dy = 0
-    elsif @y_offset > content_height - @rect.h + @rect.y
-      if inputs.mouse.held
-        # if @y_offset > (content_height - @rect.h + @rect.y) + 80
-        #   @y_offset = (content_height - @rect.h + @rect.y) + 80
-        # end
-      else
-        @y_offset = @y_offset.lerp(content_height - @rect.h + @rect.y, 0.2)
-      end
-    end
-    @scroll_view_dy *= 0.95
-    @scroll_view_dy = @scroll_view_dy.round(2)
-  end
-
-  def items
-    @items
-  end
-
-  def offset_items
-    @items.map { |primitive| primitive.merge(y: primitive.y + @y_offset) }
-  end
-
-  def prefab
-    outputs[:scroll_view].w = Grid.w
-    outputs[:scroll_view].h = Grid.h
-    outputs[:scroll_view].background_color = [0, 0, 0, 0]
-
-    outputs[:scroll_view_content].w = Grid.w
-    outputs[:scroll_view_content].h = Grid.h
-    outputs[:scroll_view_content].background_color = [0, 0, 0, 0]
-
-    outputs[:scroll_view_content].primitives << offset_items
-
-    outputs[:scroll_view].primitives << {
-      x: @rect.x,
-      y: @rect.y,
-      w: @rect.w,
-      h: @rect.h,
-      source_x: @rect.x,
-      source_y: @rect.y,
-      source_w: @rect.w,
-      source_h: @rect.h,
-      path: :scroll_view_content
-    }
-
-    outputs[:scroll_view].primitives << [
-      { x: @rect.x,
-        y: @rect.y,
-        w: @rect.w,
-        h: @rect.h,
-        primitive_marker: :border,
-        r: 128,
-        g: 128,
-        b: 128 },
-    ]
-
-    { x: 0,
-      y: 0,
-      w: Grid.w,
-      h: Grid.h,
-      path: :scroll_view }
-  end
-end
-
-class Game
-  attr_dr
-
-  attr :scroll_view
-
-  def initialize
-    @scroll_view = ScrollView.new row: 2, col: 0, w: 12, h: 20
-  end
-
-  def defaults
-    state.scroll_view_dy             ||= 0
-    state.scroll_view_offset_y       ||= 0
-  end
-
-  def calc
-    if Kernel.tick_count == 0
-      80.times do |i|
-        @scroll_view.add_item Layout.rect(row: 2 + i * 2, col: 0, w: 2, h: 2).merge(id: "item_#{i}_square_1".to_sym, path: :solid, r: 32 + i * 2, g: 32, b: 32)
-        @scroll_view.add_item Layout.rect(row: 2 + i * 2, col: 0, w: 2, h: 2).center.merge(text: "item #{i}", anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 255, b: 255)
-        @scroll_view.add_item Layout.rect(row: 2 + i * 2, col: 2, w: 2, h: 2).merge(id: "item_#{i}_square_2".to_sym, path: :solid, r: 64 + i * 2, g: 64, b: 64)
-      end
-    end
-
-    @scroll_view.args = args
-    @scroll_view.tick
-
-    if @scroll_view.clicked_items.length > 0
-      puts @scroll_view.clicked_items
-    end
+    render
   end
 
   def render
-    outputs.primitives << @scroll_view.prefab
+    outputs[@sv_left.id].set w: @sv_left.content_rect.w,
+                             h: @sv_left.content_rect.h,
+                             background_color: [0, 0, 0, 0]
+
+    outputs[@sv_left.id].primitives << @sv_left.primitives
+
+    outputs[@sv_right.id].set w: @sv_right.content_rect.w,
+                              h: @sv_right.content_rect.h,
+                              background_color: [0, 0, 0, 0]
+
+    outputs[@sv_right.id].primitives << @sv_right.primitives
+
+    if @hovered_item_id
+      if inputs.last_active == :mouse && !inputs.mouse.buttons.left.buffered_held && !inputs.mouse.wheel
+        item_rect = @sv_left.find_item_rect(id: @hovered_item_id) ||
+                    @sv_right.find_item_rect(id: @hovered_item_id)
+        outputs[@active_sv.id].primitives <<  {
+          **item_rect.content_rect,
+          path: :solid,
+          r: 255, g: 255, b: 255, a: 128
+        }
+      elsif (inputs.last_active == :keyboard || inputs.last_active == :controller) && !@active_sv.target_scroll_y
+        item_rect = @sv_left.find_item_rect(id: @hovered_item_id) ||
+                    @sv_right.find_item_rect(id: @hovered_item_id)
+        if item_rect
+          outputs[@active_sv.id].primitives <<  {
+            **item_rect.content_rect,
+            path: :solid,
+            r: 255, g: 255, b: 255, a: 128
+          }
+        end
+      end
+    end
+
+
+    outputs.background_color = [0, 0, 0, 0]
+
+    outputs.primitives << { **@sv_left.rect, path: @sv_left.id }
+    outputs.primitives << { **@sv_right.rect, path: @sv_right.id }
+
+    # outputs.primitives << Layout.debug_primitives(a: 128, invert_colors: true)
   end
-
-  def tick
-    defaults
-    calc
-    render
-  end
 end
 
-def tick args
-  $game ||= Game.new
-  $game.args = args
-  $game.tick
-end
-
-def reset args
-  $game = nil
-end
-
-DR.reset
+DR.reboot

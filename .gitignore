@@ -2,7 +2,7 @@
 logs/
 tmp/
 exceptions/
-.dragonruby/
+#.dragonruby/
 
 # Build output from dragonruby-publish / dragonruby-bind
 builds/
