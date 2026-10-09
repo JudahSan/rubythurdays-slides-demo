@@ -70,6 +70,13 @@ Resources used for preparing the slides and the talk (with the DragonRuby book u
 - [A Playful Production Process: For Game Designers (and Everyone)](https://mitpress.mit.edu/9780262045513/a-playful-production-process/)
 - [Game Design Workshop: A Playcentric Approach to Creating Innovative Games (5th Edition)](https://ndl.ethernet.edu.et/bitstreams/2b275efd-7d3e-4a7b-a6e9-ad920787dc6e/download)
 
+## Asset & Music Resources
+
+- [High Quality 16-Bit Music](https://hydrogene.itch.io/high-quality-16-bit-music) by Hydrogene
+- [Brackeys Platformer Bundle](https://brackeysgames.itch.io/brackeys-platformer-bundle) by Brackeys
+- [Free 25 Fantasy RPG Game Tracks Vol. 2](https://alkakrab.itch.io/free-25-fantasy-rpg-game-tracks-no-copyright-vol-2) by AlkaKrab
+- [Free Game Sound Effects](https://mixkit.co/free-sound-effects/game/) by Mixkit
+
 ## Credits
 
 - Engine: [DragonRuby GTK](https://dragonruby.org)
